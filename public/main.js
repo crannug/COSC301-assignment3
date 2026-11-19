@@ -27,7 +27,7 @@ class ApiError extends Error {
 async function request(method, url, body) {
   const options = { method };
   if (body) {
-    options.headers = { 'Content-Type': 'application/json' };
+    options.headers = { "Content-Type": "application/json" };
     options.body = JSON.stringify(body);
   }
 
@@ -35,14 +35,14 @@ async function request(method, url, body) {
   try {
     response = await fetch(url, options);
   } catch {
-    throw new ApiError('Could not reach the server.', 0);
+    throw new ApiError("Could not reach the server.", 0);
   }
 
   if (response.status === 204) {
     return null;
   }
 
-  const isJson = response.headers.get('Content-Type')?.includes('application/json');
+  response.headers.get("Content-Type")?.includes("application/json");
   const data = await response.json();
   if (!response.ok) {
     throw new ApiError(data.error, response.status);
@@ -52,8 +52,8 @@ async function request(method, url, body) {
 
 // ---------- Error dialog ----------
 
-const errorDialog = document.getElementById('error-dialog');
-const retryButton = document.getElementById('retry-button');
+const errorDialog = document.getElementById("error-dialog");
+const retryButton = document.getElementById("retry-button");
 let retryAction = null;
 
 /**
@@ -63,7 +63,7 @@ let retryAction = null;
  * @param {Function} [onRetry]
  */
 function showError(message, onRetry) {
-  document.getElementById('error-message').textContent = message;
+  document.getElementById("error-message").textContent = message;
   retryAction = onRetry ?? null;
   retryButton.hidden = !onRetry;
   if (!errorDialog.open) {
@@ -71,12 +71,14 @@ function showError(message, onRetry) {
   }
 }
 
-retryButton.addEventListener('click', () => {
+retryButton.addEventListener("click", () => {
   errorDialog.close();
   retryAction?.();
 });
 
-document.getElementById('close-button').addEventListener('click', () => errorDialog.close());
+document
+  .getElementById("close-button")
+  .addEventListener("click", () => errorDialog.close());
 
 /**
  * Runs an API action and shows the error dialog if it fails.
@@ -105,25 +107,30 @@ async function attempt(action) {
 // ---------- Helpers ----------
 
 function formatMoney(amount) {
-  return amount === null || amount === undefined ? 'Not available' : amount.toFixed(2);
+  return amount === null || amount === undefined
+    ? "Not available"
+    : amount.toFixed(2);
 }
 
 /**
  * Formats a YYYY-MM-DD date as a month and year, e.g. "Nov 2026".
  */
 function formatMonth(date) {
-  return new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  return new Date(`${date}T00:00`).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function todayString() {
   const today = new Date();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
   return `${today.getFullYear()}-${month}-${day}`;
 }
 
 function cell(content, className) {
-  const td = document.createElement('td');
+  const td = document.createElement("td");
   td.append(content);
   if (className) {
     td.className = className;
@@ -132,25 +139,25 @@ function cell(content, className) {
 }
 
 function badge(category) {
-  const span = document.createElement('span');
+  const span = document.createElement("span");
   span.className = `badge ${category}`;
-  span.textContent = category === 'basic' ? 'Basic need' : 'Extra';
+  span.textContent = category === "basic" ? "Basic need" : "Extra";
   return span;
 }
 
 function actionButtons(onEdit, onDelete) {
-  const td = document.createElement('td');
-  td.className = 'actions';
+  const td = document.createElement("td");
+  td.className = "actions";
 
-  const edit = document.createElement('button');
-  edit.className = 'secondary outline';
-  edit.textContent = 'Edit';
-  edit.addEventListener('click', onEdit);
+  const edit = document.createElement("button");
+  edit.className = "secondary outline";
+  edit.textContent = "Edit";
+  edit.addEventListener("click", onEdit);
 
-  const remove = document.createElement('button');
-  remove.className = 'contrast outline';
-  remove.textContent = 'Delete';
-  remove.addEventListener('click', onDelete);
+  const remove = document.createElement("button");
+  remove.className = "contrast outline";
+  remove.textContent = "Delete";
+  remove.addEventListener("click", onDelete);
 
   td.append(edit, remove);
   return td;
@@ -169,7 +176,7 @@ function actionButtons(onEdit, onDelete) {
  */
 function setUpForm({ form, noun, toBody, save }) {
   const submitButton = form.querySelector('button[type="submit"]');
-  const cancelButton = form.querySelector('.cancel');
+  const cancelButton = form.querySelector(".cancel");
   let editingId = null;
 
   function reset() {
@@ -180,7 +187,7 @@ function setUpForm({ form, noun, toBody, save }) {
     cancelButton.hidden = true;
   }
 
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const saved = await attempt(() => save(toBody(form), editingId));
     if (saved) {
@@ -188,7 +195,7 @@ function setUpForm({ form, noun, toBody, save }) {
     }
   });
 
-  cancelButton.addEventListener('click', reset);
+  cancelButton.addEventListener("click", reset);
   reset();
 
   return {
@@ -237,16 +244,20 @@ function setUpList({ name, toRow }) {
   let showAll = false;
 
   function render() {
-    const newestFirst = [...entries].reverse().sort((a, b) => b.date.localeCompare(a.date));
+    const newestFirst = [...entries]
+      .reverse()
+      .sort((a, b) => b.date.localeCompare(a.date));
     const visible = showAll ? newestFirst : newestFirst.slice(0, RECENT_COUNT);
 
     rows.replaceChildren(...visible.map(toRow));
     empty.hidden = entries.length > 0;
     toggle.hidden = entries.length <= RECENT_COUNT;
-    toggle.textContent = showAll ? 'Show recent' : `Show all (${entries.length})`;
+    toggle.textContent = showAll
+      ? "Show recent"
+      : `Show all (${entries.length})`;
   }
 
-  toggle.addEventListener('click', () => {
+  toggle.addEventListener("click", () => {
     showAll = !showAll;
     render();
   });
@@ -262,8 +273,8 @@ function setUpList({ name, toRow }) {
 // ---------- Expenses ----------
 
 const expenseForm = setUpForm({
-  form: document.getElementById('expense-form'),
-  noun: 'expense',
+  form: document.getElementById("expense-form"),
+  noun: "expense",
   toBody: (form) => ({
     description: form.elements.description.value,
     amount: Number(form.elements.amount.value),
@@ -272,29 +283,30 @@ const expenseForm = setUpForm({
   }),
   save: async (body, id) => {
     if (id) {
-      await request('PUT', `/api/expenses/${id}`, body);
+      await request("PUT", `/api/expenses/${id}`, body);
     } else {
-      await request('POST', '/api/expenses', body);
+      await request("POST", "/api/expenses", body);
     }
     await refresh(loadExpenses);
   },
 });
 
 const expenseList = setUpList({
-  name: 'expense',
+  name: "expense",
   toRow: (expense) => {
-    const row = document.createElement('tr');
+    const row = document.createElement("tr");
     row.append(
-      cell(expense.date, 'nowrap'),
+      cell(expense.date, "nowrap"),
       cell(expense.description),
       cell(badge(expense.category)),
-      cell(formatMoney(expense.amount), 'number'),
+      cell(formatMoney(expense.amount), "number"),
       actionButtons(
         () => expenseForm.edit(expense),
-        () => attempt(async () => {
-          await request('DELETE', `/api/expenses/${expense.id}`);
-          await refresh(loadExpenses);
-        }),
+        () =>
+          attempt(async () => {
+            await request("DELETE", `/api/expenses/${expense.id}`);
+            await refresh(loadExpenses);
+          }),
       ),
     );
     return row;
@@ -302,41 +314,42 @@ const expenseList = setUpList({
 });
 
 async function loadExpenses() {
-  expenseList.show(await request('GET', '/api/expenses'));
+  expenseList.show(await request("GET", "/api/expenses"));
 }
 
 // ---------- Salary ----------
 
 const salaryForm = setUpForm({
-  form: document.getElementById('salary-form'),
-  noun: 'salary',
+  form: document.getElementById("salary-form"),
+  noun: "salary",
   toBody: (form) => ({
     date: form.elements.date.value,
     amount: Number(form.elements.amount.value),
   }),
   save: async (body, id) => {
     if (id) {
-      await request('PUT', `/api/salaries/${id}`, body);
+      await request("PUT", `/api/salaries/${id}`, body);
     } else {
-      await request('POST', '/api/salaries', body);
+      await request("POST", "/api/salaries", body);
     }
     await refresh(loadSalaries);
   },
 });
 
 const salaryList = setUpList({
-  name: 'salary',
+  name: "salary",
   toRow: (salary) => {
-    const row = document.createElement('tr');
+    const row = document.createElement("tr");
     row.append(
-      cell(formatMonth(salary.date), 'nowrap'),
-      cell(formatMoney(salary.amount), 'number'),
+      cell(formatMonth(salary.date), "nowrap"),
+      cell(formatMoney(salary.amount), "number"),
       actionButtons(
         () => salaryForm.edit(salary),
-        () => attempt(async () => {
-          await request('DELETE', `/api/salaries/${salary.id}`);
-          await refresh(loadSalaries);
-        }),
+        () =>
+          attempt(async () => {
+            await request("DELETE", `/api/salaries/${salary.id}`);
+            await refresh(loadSalaries);
+          }),
       ),
     );
     return row;
@@ -344,7 +357,7 @@ const salaryList = setUpList({
 });
 
 async function loadSalaries() {
-  salaryList.show(await request('GET', '/api/salaries'));
+  salaryList.show(await request("GET", "/api/salaries"));
 }
 
 // ---------- Summary ----------
@@ -353,12 +366,12 @@ async function loadSalaries() {
  * Loads the summary totals from the API and shows them.
  */
 async function loadSummary() {
-  const summary = await request('GET', '/api/summary');
+  const summary = await request("GET", "/api/summary");
 
-  for (const field of ['salary', 'basic', 'extra', 'total', 'savings']) {
+  for (const field of ["salary", "basic", "extra", "total", "savings"]) {
     const value = document.querySelector(`[data-field="${field}"]`);
     value.textContent = formatMoney(summary[field]);
-    value.classList.toggle('negative', summary[field] < 0);
+    value.classList.toggle("negative", summary[field] < 0);
   }
 }
 
@@ -369,9 +382,13 @@ async function loadSummary() {
  * console; the affected section keeps its empty state.
  */
 async function loadAll() {
-  const results = await Promise.allSettled([loadExpenses(), loadSalaries(), loadSummary()]);
+  const results = await Promise.allSettled([
+    loadExpenses(),
+    loadSalaries(),
+    loadSummary(),
+  ]);
   for (const result of results) {
-    if (result.status === 'rejected') {
+    if (result.status === "rejected") {
       console.error(result.reason.message);
     }
   }
